@@ -31,7 +31,7 @@ export function TypedHero() {
   }, [mode, len, i]);
 
   return (
-    <h1 className="mt-4 font-display text-4xl leading-[1.1] tracking-[-0.02em] sm:text-6xl"
+    <h1 className="mt-4 font-display text-4xl leading-[1.1] tracking-[-0.02em] sm:text-6xl 2xl:text-[4.5rem]"
         aria-label={`Every shift: ${PROMISES.map((p) => p.replace('.', '')).join(', ')}.`}>
       <span aria-hidden="true">Every shift,</span>
       <br />
@@ -197,7 +197,7 @@ export function FeatureGrid() {
 export function SiteFooter() {
   return (
     <footer className="mx-2 mb-2 overflow-hidden rounded-[28px] bg-manila text-ink sm:mx-4 sm:mb-4">
-      <div className="mx-auto max-w-6xl px-6 pt-20 sm:px-10 lg:pt-28">
+      <div className="mx-auto max-w-6xl px-6 pt-20 sm:px-10 lg:pt-28 xl:max-w-7xl 2xl:max-w-[90rem]">
         <div className="flex flex-wrap items-end justify-between gap-10">
           <h2 className="font-display text-[2.6rem] leading-[1.05] tracking-[-0.035em] sm:text-[4.25rem]">
             Fair work,<span className="text-ink/45"> shift by shift.</span>

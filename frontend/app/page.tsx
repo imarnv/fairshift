@@ -33,7 +33,7 @@ const STEPS = [
 export default function Landing() {
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6 lg:px-10 xl:max-w-7xl 2xl:max-w-[90rem]">
         <Wordmark className="text-[1.6rem]" />
         <nav aria-label="Page" className="flex items-center gap-5">
           <a href="#features" className="hidden text-sm text-muted hover:text-ink sm:inline">Features</a>
@@ -42,7 +42,7 @@ export default function Landing() {
         </nav>
       </header>
 
-      <main id="main" className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+      <main id="main" className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-10 xl:max-w-7xl 2xl:max-w-[90rem]">
         <section className="flex flex-col gap-12 py-8 lg:min-h-[calc(100dvh-76px)]">
           <div className="grid flex-1 items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
             <div>
