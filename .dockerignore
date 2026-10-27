@@ -1,0 +1,13 @@
+**/node_modules
+**/.next
+**/out
+**/__pycache__
+**/.venv
+**/*.tsbuildinfo
+**/.env
+**/.env.*
+backend/.dev-secrets.json
+backend/static
+backend/tests
+test-qr
+.git

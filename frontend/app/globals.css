@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* The Docify palette: warm paper, brown ink, a brown accent; red tape only marks
+   the open page. Light only, by design. Every text colour passes WCAG AA (4.5:1)
+   on paper, surface and the desk strip; muted and verify are a shade darker than
+   Docify's so they also pass on the tan panels. */
+:root {
+  --paper:   245 242 234;   /* #F5F2EA cream */
+  --surface: 252 251 247;   /* #FCFBF7 ivory */
+  --ink:      61  57  41;   /* #3D3929 brown */
+  --muted:   104  96  80;   /* #686050 */
+  --seal:    122  82  54;   /* #7A5236 brown accent: actions and links */
+  --tape:    200  50  63;   /* #C8323F red tape: the active marker, nothing else */
+  --verify:   66 104  59;   /* #42683B olive: safe, done */
+  --query:   176  58  46;   /* #B03A2E brick: danger, overdue */
+  --caution: 146  64  14;   /* #92400E amber: needs attention */
+  --rule:    224 218 204;   /* #E0DACC */
+  --manila:  233 227 211;   /* #E9E3D3 case-folder tan */
+  --desk:    239 235 225;   /* #EFEBE1 the stats strip */
+}
+
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+body {
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* One visible focus ring for keyboard users, in the accent. */
+:focus-visible { outline: 2px solid rgb(var(--seal)); outline-offset: 2px; border-radius: 6px; }
+
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 12px; top: 12px; z-index: 50; background: rgb(var(--surface)); padding: 8px 12px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 420ms cubic-bezier(.2,.7,.2,1) both; }
+
+/* Signing in: a payslip's lines write themselves while a beam reads down the sheet. */
+.write { stroke-dasharray: 1; stroke-dashoffset: 1; animation: write 1.2s cubic-bezier(.6,0,.3,1) infinite alternate; }
+@keyframes write { 0%, 10% { stroke-dashoffset: 1; } 70%, 100% { stroke-dashoffset: 0; } }
+.scan { animation: scan 1.6s ease-in-out infinite alternate; }
+@keyframes scan { from { transform: translateY(0); } to { transform: translateY(98px); } }
+@keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* The voice button breathes while the assistant listens. */
+@keyframes pulse-ring { from { transform: scale(1); opacity: 0.45; } to { transform: scale(1.6); opacity: 0; } }
+.pulse-ring::before {
+  content: ''; position: absolute; inset: 0; border-radius: 9999px;
+  background: rgb(var(--seal)); animation: pulse-ring 1.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
