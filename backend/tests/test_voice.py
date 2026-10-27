@@ -1,8 +1,10 @@
 """The voice assistant's session setup and tools, tested without a network connection."""
 
 import pytest
+from fastapi.testclient import TestClient
 
 from app import store, voice
+from app.main import app
 
 
 @pytest.fixture(autouse=True)
@@ -45,3 +47,16 @@ def test_voice_feedback_is_anonymous_and_clamped():
 
 def test_unknown_tool_is_refused():
     assert "error" in voice.run_tool(store.db.users["w1"], "delete_everything", {})
+
+
+def test_voice_report_shows_in_the_workers_safety_list():
+    client = TestClient(app)
+    voice.run_tool(store.db.users["w1"], "report_hazard",
+                   {"category": "electrical", "severity": "high", "description": "Wire hanging near the lift", "location": "Floor 3"})
+    token = client.post("/api/auth/login", json={"phone": store.DEMO_WORKER_PHONE, "pin": store.DEMO_WORKER_PIN}).json()["token"]
+    mine = client.get("/api/me/hazards", headers={"Authorization": f"Bearer {token}"}).json()
+    assert mine[0]["description"] == "Wire hanging near the lift" and mine[0]["channel"] == "voice" and mine[0]["due"]
+
+
+def test_only_changing_tools_are_confirmed_on_screen():
+    assert voice.ACTIONS == {"report_hazard", "give_feedback"}

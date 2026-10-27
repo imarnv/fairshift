@@ -35,6 +35,7 @@ router = APIRouter()
 LANG_NAMES = {"en": "English", "hi": "Hindi", "ta": "Tamil", "te": "Telugu", "kn": "Kannada"}
 VERTEX_MODEL, STUDIO_MODEL = "gemini-live-2.5-flash-native-audio", "gemini-3.1-flash-live-preview"
 VOICE = "Kore"  # the Eloquent bridge's default voice
+ACTIONS = {"report_hazard", "give_feedback"}  # tools that change something, confirmed on screen
 
 TOOLS = [{"functionDeclarations": [
     {"name": "get_payslip", "description": "This month's pay: hours, overtime, deductions and take-home."},
@@ -67,8 +68,12 @@ def system_prompt(w: User, lang: str) -> str:
         "Many workers read little, so use short sentences and everyday words, and say amounts in rupees. "
         "Always use a tool for pay, hours or report status; never guess a number, and mention only "
         "what the tool returned (there are no bonuses or allowances unless a tool lists them). "
-        "To report a hazard, ask what it is, where it is and how dangerous, repeat it back, then file it. "
-        "Feedback is always anonymous: say so, because workers fear being identified. "
+        "To report a hazard, work out the category and severity yourself from what the worker says "
+        "(anything that could injure someone now is high, anything that could kill is critical); never ask them "
+        "to choose. Ask only for what is missing, usually where it is. Read the report back in one short "
+        "sentence and file it as soon as they agree, with their name unless they ask to stay anonymous. "
+        "For feedback, work out the topic, ask for a 1 to 5 rating only if they gave none, read it back once and "
+        "send it. Feedback is always anonymous: say so, because workers fear being identified. "
         "If anyone is in immediate danger, tell them to move away and call 112 before anything else."
     )
 
@@ -169,7 +174,9 @@ async def _gemini_to_browser(ws: WebSocket, gemini, w: User) -> None:
                 except (KeyError, ValueError, TypeError) as e:
                     result = {"error": f"bad arguments: {e}"}
                 responses.append({"id": fc.get("id"), "name": fc["name"], "response": {"result": result}})
-                await ws.send_json({"type": "tool", "name": fc["name"]})
+                if fc["name"] in ACTIONS and "error" not in result:
+                    # shown on screen, so the worker sees the report or feedback really went through
+                    await ws.send_json({"type": "action", "name": fc["name"], "result": result})
             await gemini.send(json.dumps({"tool_response": {"function_responses": responses}}))
 
 

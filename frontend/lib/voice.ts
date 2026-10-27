@@ -11,7 +11,7 @@ import { Lang, session } from './api';
 export type VoiceEvent =
   | { type: 'ready' }
   | { type: 'transcript'; role: 'user' | 'assistant'; text: string }
-  | { type: 'tool'; name: string }
+  | { type: 'action'; name: 'report_hazard' | 'give_feedback'; result: { deadline?: string; assigned_to?: string } }
   | { type: 'error'; message: string }
   | { type: 'closed' };
 

@@ -6,7 +6,9 @@ import type { Lang } from '@/lib/api';
 import type { T } from '@/lib/i18n';
 import { VoiceEvent, startVoice } from '@/lib/voice';
 
-type Line = { role: 'user' | 'assistant'; text: string };
+type Line = { role: 'user' | 'assistant' | 'action'; text: string };
+
+const when = (iso: string) => new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 
 /* Full-screen talk panel. One big button, live captions, nothing to read to get started. */
 export function Voice({ t, lang, onClose }: { t: T; lang: Lang; onClose: () => void }) {
@@ -22,6 +24,12 @@ export function Voice({ t, lang, onClose }: { t: T; lang: Lang; onClose: () => v
       if (e.type === 'ready') setState('live');
       else if (e.type === 'error') { setState('error'); setMessage(e.message); }
       else if (e.type === 'closed') setState((s) => (s === 'live' ? s : 'error'));
+      else if (e.type === 'action') {
+        const text = e.name === 'report_hazard'
+          ? t('report_sent', { who: e.result.assigned_to ?? '', due: e.result.deadline ? when(e.result.deadline) : '' })
+          : t('feedback_sent');
+        setLines((prev) => [...prev, { role: 'action', text }]);
+      }
       else if (e.type === 'transcript') {
         // Captions arrive in fragments; join consecutive fragments from the same speaker.
         setLines((prev) => {
@@ -45,7 +53,9 @@ export function Voice({ t, lang, onClose }: { t: T; lang: Lang; onClose: () => v
         <div className="mx-auto max-w-lg space-y-3" aria-live="polite">
           <h1 className="font-display text-[2rem] leading-[1.1] tracking-[-0.02em]">{t('talk')}</h1>
           <p className="border-b border-rule pb-5 text-[15px] text-muted">{t('talk_help')}</p>
-          {lines.map((l, i) => (
+          {lines.map((l, i) => l.role === 'action' ? (
+            <div key={i} className="mx-auto max-w-[92%]"><Notice tone="verify" icon="check">{l.text}</Notice></div>
+          ) : (
             <p key={i} className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-[15.5px] leading-relaxed ${
               l.role === 'user' ? 'ml-auto bg-seal text-white' : 'border border-rule bg-surface shadow-sheet'}`}>
               {l.text}
