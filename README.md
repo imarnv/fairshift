@@ -48,38 +48,8 @@ Choose **Try the demo**, then **Continue as a worker** (Murugan, a mason) or
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph Phone["Worker's phone"]
-        WA["Worker app<br/>5 languages · voice"]
-    end
-    subgraph Desk["Employer's laptop"]
-        ED["Employer dashboard"]
-    end
-    subgraph Run["Google Cloud Run · one container"]
-        WEB["Static web app<br/>Next.js export"]
-        API["FastAPI<br/>/api"]
-        WS["/ws/voice"]
-        SVC["services.py<br/>shared actions"]
-        RULES["Rules<br/>payroll · wellbeing · safety · feedback"]
-        CRYPTO["crypto.py<br/>AES-256-GCM · Ed25519 · HMAC"]
-        STORE[("store.py<br/>in-memory demo data")]
-    end
-    SM["Secret Manager"]
-    GEM["Gemini Live"]
-
-    WA -- HTTPS --> WEB
-    ED -- HTTPS --> WEB
-    WA -- "JSON + JWT" --> API
-    ED -- "JSON + JWT" --> API
-    WA -- "PCM audio over WSS" --> WS
-    WS <--> GEM
-    WS -- tool calls --> SVC
-    API --> SVC --> RULES
-    SVC --> CRYPTO
-    SVC --> STORE
-    SM -. keys at start-up .-> API
-```
+One Cloud Run container: FastAPI serves the JSON API, the `/ws/voice` socket and the exported Next.js app from one
+origin. Secrets come from Secret Manager at start-up, and the voice assistant talks to Gemini Live.
 
 | Path | What it holds |
 |---|---|
@@ -94,83 +64,24 @@ flowchart LR
 
 ## Key flows
 
-**A shift, from check-in to payslip**
+**A shift, from check-in to payslip.** The worker scans the site's QR poster; the API checks the code
+belongs to their site and, when the phone sends a location, that they are within the site's radius. A live
+timer runs until check-out. The payslip splits hours per ISO week into regular and overtime (past 9 h a day
+or 48 h a week, paid at double rate), then deducts PF and ESI, and every line can be read aloud.
 
-```mermaid
-sequenceDiagram
-    actor W as Worker
-    participant App as Worker app
-    participant API as API
-    participant P as payroll.py
-    W->>App: Scan site QR poster
-    App->>App: Ask for one location fix (optional)
-    App->>API: POST /api/shifts/check-in {code, lat, lng}
-    API->>API: Code matches site? Within its radius?
-    API-->>App: 201 started
-    App->>W: Live timer, bar against the 9 h limit
-    W->>App: Check out
-    App->>API: POST /api/shifts/check-out
-    App->>API: GET /api/me/payslip
-    API->>P: split_overtime(daily hours)
-    P-->>API: regular + overtime (past 9 h/day or 48 h/week, paid 2x)
-    API-->>App: lines: basic, overtime, PF, ESI, net
-    App->>W: Payslip, read aloud in their language
-```
+**A hazard report and its deadline.** A report starts with the site supervisor. Its deadline depends on
+severity (critical 4 h, high 24 h, medium 72 h, low 7 days). Missed once, it moves to the site manager;
+missed by twice the deadline, to HR & Safety. Reports filed by voice follow exactly the same path.
 
-**A hazard report and its deadline**
+**Anonymous feedback.** A rating and comment are stored with the site and ISO week only; the comment is
+sealed with AES-256-GCM. The worker's voter tag goes into a separate per-site set. Until five different
+people have answered, the dashboard shows a lock; after that, comments are decrypted, shuffled and shown
+without dates.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Supervisor: reported (app or voice)
-    Supervisor --> Resolved: fixed in time
-    Supervisor --> SiteManager: deadline missed
-    SiteManager --> Resolved: fixed late
-    SiteManager --> HRSafety: twice the deadline missed
-    HRSafety --> Resolved: fixed late
-    Resolved --> [*]
-    note right of Supervisor
-        Deadline by severity:
-        critical 4 h, high 24 h,
-        medium 72 h, low 7 days
-    end note
-```
-
-**Anonymous feedback, from phone to dashboard**
-
-```mermaid
-flowchart LR
-    F["Worker sends rating + comment"] --> S["Stored with site and ISO week only<br/>(no worker id field exists)"]
-    S --> E["Comment sealed with AES-256-GCM<br/>site id bound as associated data"]
-    F --> V["Worker's voter tag added to the site's set<br/>(kept apart from the answers)"]
-    E --> Q{"5 or more different people<br/>at this site?"}
-    V --> Q
-    Q -- no --> H["Dashboard shows a lock:<br/>'3 of 5 people needed'"]
-    Q -- yes --> D["Decrypt, shuffle, drop dates"] --> M["Manager sees averages<br/>and comments"]
-```
-
-**A voice conversation**
-
-```mermaid
-sequenceDiagram
-    actor W as Worker
-    participant App as Worker app
-    participant WS as /ws/voice
-    participant G as Gemini Live
-    participant S as services.py
-    W->>App: Tap Talk
-    App->>WS: {token, lang shown on screen}
-    WS->>G: setup: voice, language_code, worker context, 5 tools
-    WS->>G: "Greet the worker by name"
-    G-->>App: Spoken greeting in their language
-    W->>App: "இந்த மாதம் என் சம்பளம் எவ்வளவு?"
-    App->>WS: 16 kHz PCM audio
-    WS->>G: audio
-    G->>WS: toolCall get_payslip
-    WS->>S: payslip_for(worker)
-    S-->>WS: net ₹39,011
-    WS->>G: tool_response
-    G-->>App: Spoken answer + captions
-```
+**A voice conversation.** The app opens `/ws/voice` with the worker's token and the language on screen.
+The server starts a Gemini Live session in that language with the worker's context and five tools, and the
+assistant greets the worker by name. Questions about pay, hours or reports become tool calls into
+`services.py`, so every number spoken comes from the same rules as the app.
 
 ## How it meets the judging criteria
 
