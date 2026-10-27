@@ -133,6 +133,6 @@ def test_endorsed_skill_verifies_publicly(manager):
 
 
 def test_responses_carry_security_headers():
-    headers = client.get("/healthz").headers
+    headers = client.get("/health").headers
     assert headers["X-Content-Type-Options"] == "nosniff"
     assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]

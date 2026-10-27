@@ -40,7 +40,9 @@ The demo is seeded with one site per sector the problem statement names; the sam
 
 ## Try it
 
-Open the deployed link, choose **Try the demo**, then **Continue as a worker** (Murugan, a mason) or
+**Live:** https://shiftsaathi-737262865993.asia-south1.run.app
+
+Choose **Try the demo**, then **Continue as a worker** (Murugan, a mason) or
 **Continue as an employer** (Anita, HR & Safety). Every worker's PIN is `1234`; phones run from
 `9000000001` to `9000000023`. Site codes for check-in: `SKY-7Q2`, `CGH-4K9`, `RVC-2M5`, `SLT-8F3`.
 

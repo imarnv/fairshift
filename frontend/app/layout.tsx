@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: 'ShiftSaathi',
   description: 'Shift tracking, clear payslips, safety reports and anonymous feedback for workers, in their own language.',
   manifest: '/manifest.webmanifest',
+  icons: { icon: '/icon.svg' },
 };
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#F5F2EA' };

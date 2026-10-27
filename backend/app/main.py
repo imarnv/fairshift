@@ -47,7 +47,7 @@ async def security_headers(request: Request, call_next):
     return response
 
 
-@app.get("/healthz")
+@app.get("/health")  # not /healthz: Cloud Run reserves paths ending in "z"
 def health() -> dict:
     return {"ok": True}
 
