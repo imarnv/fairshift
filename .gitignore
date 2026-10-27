@@ -16,3 +16,7 @@ backend/.dev-secrets.json
 backend/static
 test-qr/
 .DS_Store
+
+# Xcode per-user and build files
+ios/**/xcuserdata/
+ios/build/

@@ -48,5 +48,9 @@ class CredentialIn(BaseModel):
     skill: str = Field(min_length=3, max_length=80)
 
 
+class PayOrderIn(BaseModel):
+    month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
+
+
 class VerifyIn(BaseModel):
     token: str = Field(max_length=2000)

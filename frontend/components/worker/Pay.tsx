@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, Icon, bigSecondary, field, rupees } from '@/components/ui';
+import { Card, Icon, Pill, bigSecondary, field, rupees } from '@/components/ui';
 import { Lang, Payslip, api } from '@/lib/api';
 import { Key, T, speak } from '@/lib/i18n';
 
@@ -47,6 +47,12 @@ export function Pay({ t, lang }: { t: T; lang: Lang }) {
           <div className="rounded-xl border border-rule bg-desk p-5">
             <p className="flex items-center gap-2 text-[13px] text-muted"><span className="text-seal"><Icon name="rupee" className="h-4 w-4" /></span>{t('take_home')}</p>
             <p className="mt-2 font-display text-[clamp(2rem,10vw,2.8rem)] leading-none tabular-nums">{rupees(slip.net)}</p>
+            <div className="mt-3">
+              {slip.payment?.status === 'paid'
+                ? <Pill tone="verify">{t('paid_on', { date: new Date(slip.payment.paid_at!).toLocaleDateString(`${lang}-IN`, { day: 'numeric', month: 'short' }) })}</Pill>
+                : <Pill tone="muted">{t('not_paid_yet')}</Pill>}
+              {slip.payment?.payment_id && <p className="mt-1 font-mono text-[11.5px] text-muted">PhonePe {slip.payment.payment_id}</p>}
+            </div>
             <p className="mt-2 text-[13px] text-muted">
               {t('days_worked', { value: slip.days_worked })} · {Math.round(slip.regular_hours + slip.overtime_hours)} h · ₹{slip.hourly_rate}/h
             </p>

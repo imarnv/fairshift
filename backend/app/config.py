@@ -47,6 +47,12 @@ class Settings:
     gcp_project: str | None
     gcp_location: str
     live_model: str | None
+    phonepe_client_id: str | None
+    phonepe_client_secret: str | None    # never leaves the server
+    phonepe_client_version: str
+    phonepe_env: str                     # "sandbox" unless PHONEPE_ENV=production is set on purpose
+    phonepe_webhook_user: str | None     # the username and password set on PhonePe's webhook
+    phonepe_webhook_password: str | None
 
 
 def load() -> Settings:
@@ -61,6 +67,12 @@ def load() -> Settings:
         gcp_project=os.getenv("GOOGLE_CLOUD_PROJECT") or None,
         gcp_location=os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1"),
         live_model=os.getenv("LIVE_MODEL") or None,
+        phonepe_client_id=os.getenv("PHONEPE_CLIENT_ID") or None,
+        phonepe_client_secret=os.getenv("PHONEPE_CLIENT_SECRET") or None,
+        phonepe_client_version=os.getenv("PHONEPE_CLIENT_VERSION", "1"),
+        phonepe_env="production" if os.getenv("PHONEPE_ENV") == "production" else "sandbox",
+        phonepe_webhook_user=os.getenv("PHONEPE_WEBHOOK_USER") or None,
+        phonepe_webhook_password=os.getenv("PHONEPE_WEBHOOK_PASSWORD") or None,
     )
 
 

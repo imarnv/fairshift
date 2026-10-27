@@ -107,7 +107,9 @@
     "overtime_now": "Overtime: {value}",
     "today": "Today",
     "this_week": "This week",
-    "shift_recorded": "Shift recorded: {value}. Added to your total."
+    "shift_recorded": "Shift recorded: {value}. Added to your total.",
+    "paid_on": "Paid on {date}",
+    "not_paid_yet": "Not paid yet"
   },
   "hi": {
     "lang_name": "हिन्दी",
@@ -217,7 +219,9 @@
     "overtime_now": "ओवरटाइम: {value}",
     "today": "आज",
     "this_week": "इस हफ़्ते",
-    "shift_recorded": "शिफ्ट दर्ज हुई: {value}। आपके कुल समय में जोड़ दी गई।"
+    "shift_recorded": "शिफ्ट दर्ज हुई: {value}। आपके कुल समय में जोड़ दी गई।",
+    "paid_on": "{date} को भुगतान हुआ",
+    "not_paid_yet": "अभी भुगतान नहीं हुआ"
   },
   "ta": {
     "lang_name": "தமிழ்",
@@ -327,7 +331,9 @@
     "overtime_now": "கூடுதல் நேரம்: {value}",
     "today": "இன்று",
     "this_week": "இந்த வாரம்",
-    "shift_recorded": "ஷிப்ட் பதிவானது: {value}. உங்கள் மொத்தத்தில் சேர்க்கப்பட்டது."
+    "shift_recorded": "ஷிப்ட் பதிவானது: {value}. உங்கள் மொத்தத்தில் சேர்க்கப்பட்டது.",
+    "paid_on": "{date} அன்று செலுத்தப்பட்டது",
+    "not_paid_yet": "இன்னும் செலுத்தப்படவில்லை"
   },
   "te": {
     "lang_name": "తెలుగు",
@@ -437,7 +443,9 @@
     "overtime_now": "ఓవర్‌టైమ్: {value}",
     "today": "ఈరోజు",
     "this_week": "ఈ వారం",
-    "shift_recorded": "షిఫ్ట్ నమోదైంది: {value}. మీ మొత్తంలో కలిపారు."
+    "shift_recorded": "షిఫ్ట్ నమోదైంది: {value}. మీ మొత్తంలో కలిపారు.",
+    "paid_on": "{date}న చెల్లించబడింది",
+    "not_paid_yet": "ఇంకా చెల్లించలేదు"
   },
   "kn": {
     "lang_name": "ಕನ್ನಡ",
@@ -547,6 +555,8 @@
     "overtime_now": "ಓವರ್‌ಟೈಮ್: {value}",
     "today": "ಇಂದು",
     "this_week": "ಈ ವಾರ",
-    "shift_recorded": "ಶಿಫ್ಟ್ ದಾಖಲಾಗಿದೆ: {value}. ನಿಮ್ಮ ಒಟ್ಟು ಸಮಯಕ್ಕೆ ಸೇರಿಸಲಾಗಿದೆ."
+    "shift_recorded": "ಶಿಫ್ಟ್ ದಾಖಲಾಗಿದೆ: {value}. ನಿಮ್ಮ ಒಟ್ಟು ಸಮಯಕ್ಕೆ ಸೇರಿಸಲಾಗಿದೆ.",
+    "paid_on": "{date} ರಂದು ಪಾವತಿಸಲಾಗಿದೆ",
+    "not_paid_yet": "ಇನ್ನೂ ಪಾವತಿಸಿಲ್ಲ"
   }
 }

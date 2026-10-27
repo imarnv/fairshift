@@ -6,6 +6,7 @@ import { LangPicker } from '@/components/LangPicker';
 import { ICONS, IconName, Wordmark } from '@/components/ui';
 import { ApiError, Lang, api, session } from '@/lib/api';
 import { LANGS, translator } from '@/lib/i18n';
+import { inApp } from '@/lib/native';
 
 /* Demo accounts from backend/app/store.py, so judges can sign in with one tap. */
 const DEMO = { worker: ['9000000001', '1234'], manager: ['9000000000', '4321'] } as const;
@@ -28,6 +29,7 @@ export default function Login() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [worker, setWorker] = useState(false);   // inside the iPhone app: worker sign-in only
   const t = translator(lang);
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export default function Login() {
     } catch { /* storage blocked: stay on English */ }
   }, []);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
+  useEffect(() => { setWorker(inApp()); }, []);
 
   const chooseLang = (l: Lang) => {
     setLang(l);
@@ -70,7 +73,7 @@ export default function Login() {
     <div className="grid min-h-dvh lg:grid-cols-2">
       <main id="main" className="flex flex-col px-6 py-8 sm:px-12">
         <div className="flex items-center justify-between">
-          <Link href="/" aria-label="ShiftSaathi home"><Wordmark className="text-[1.6rem]" /></Link>
+          {worker ? <Wordmark className="text-[1.6rem]" /> : <Link href="/" aria-label="ShiftSaathi home"><Wordmark className="text-[1.6rem]" /></Link>}
           <LangPicker lang={lang} onChange={chooseLang} />
         </div>
 
@@ -118,7 +121,7 @@ export default function Login() {
 
           <div className="space-y-3">
             <DemoButton icon="users" label={t('continue_worker')} who="Murugan · Mason, Skyline Towers" onClick={() => void signIn(...DEMO.worker)} />
-            <DemoButton icon="grid" label={t('continue_manager')} who="Anita · HR & Safety lead" onClick={() => void signIn(...DEMO.manager)} />
+            {!worker && <DemoButton icon="grid" label={t('continue_manager')} who="Anita · HR & Safety lead" onClick={() => void signIn(...DEMO.manager)} />}
           </div>
 
           <p className="mt-6 text-center text-[12px] leading-relaxed text-muted">

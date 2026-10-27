@@ -4,7 +4,7 @@ from datetime import date
 
 from fastapi import APIRouter, Depends, Query
 
-from .. import services
+from .. import payments, services
 from ..crypto import signer
 from ..schemas import CheckInIn, FeedbackIn, HazardIn, LangIn, LoginIn, VerifyIn
 from ..security import authenticate, current_user, issue_token, require
@@ -55,7 +55,8 @@ def my_shifts(user: User = Depends(worker_only)) -> list[dict]:
 def my_payslip(month: str | None = Query(None, pattern=r"^\d{4}-(0[1-9]|1[0-2])$"),
                user: User = Depends(worker_only)) -> dict:
     year, mon = map(int, month.split("-")) if month else (date.today().year, date.today().month)
-    return services.payslip_for(user, year, mon)
+    slip = services.payslip_for(user, year, mon)
+    return slip | {"payment": payments.view(payments.paid_for(user.id, slip["period"]))}
 
 
 @router.get("/me/wellbeing")

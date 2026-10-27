@@ -1,0 +1,27 @@
+# Generates ShiftSaathi.xcodeproj:  cd ios && xcodegen
+name: ShiftSaathi
+options:
+  bundleIdPrefix: com.imarnv
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  ShiftSaathi:
+    type: application
+    platform: iOS
+    sources: [ShiftSaathi]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.imarnv.shiftsaathi
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: ShiftSaathi
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_NSCameraUsageDescription: "ShiftSaathi uses the camera to scan your site's QR code when you check in."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "ShiftSaathi uses the microphone so you can talk to the voice assistant."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "ShiftSaathi checks you are at your site when you check in."

@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from . import voice
+from . import payments, voice
 from .config import settings
 from .routes import admin, worker
 
@@ -17,6 +17,7 @@ app = FastAPI(title="ShiftSaathi", docs_url=None if settings.production else "/d
 app.include_router(worker.router)
 app.include_router(admin.router)
 app.include_router(voice.router)
+app.include_router(payments.router)
 
 if settings.allowed_origins:  # only for local dev, where the web app runs on another port
     app.add_middleware(CORSMiddleware, allow_origins=settings.allowed_origins,

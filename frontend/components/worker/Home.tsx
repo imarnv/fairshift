@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Card, Icon, Notice, Pill, bigPrimary, bigSecondary, field, levelTone } from '@/components/ui';
 import { ApiError, Fatigue, Lang, Me, api } from '@/lib/api';
 import type { Key, T } from '@/lib/i18n';
+import { inApp, nativeScan } from '@/lib/native';
 import { useLive } from '@/lib/useLive';
 
 type Shift = { start: string; end: string | null };
@@ -83,7 +84,12 @@ export function Home({ me, t, lang, onChange }: { me: Me; t: T; lang: Lang; onCh
   const weekHours = (fatigue?.week_hours ?? 0) + runningMs / 3.6e6;
   const runningH = runningMs / 3.6e6;
   const greet: Key = new Date(now).getHours() < 12 ? 'greet_morning' : new Date(now).getHours() < 17 ? 'greet_afternoon' : 'greet_evening';
-  const canScan = typeof window !== 'undefined' && 'BarcodeDetector' in window;
+  const canScan = inApp() || (typeof window !== 'undefined' && 'BarcodeDetector' in window);
+  const scan = async () => {
+    if (!inApp()) return setScanning(true);
+    const found = await nativeScan();   // the iPhone app's camera
+    if (found) void checkIn(found);
+  };
 
   return (
     <div className="space-y-5">
@@ -128,7 +134,7 @@ export function Home({ me, t, lang, onChange }: { me: Me; t: T; lang: Lang; onCh
             {recorded && <div className="mt-4"><Notice tone="verify" icon="check">{recorded}</Notice></div>}
             <form className="mt-4 space-y-3" onSubmit={(e) => { e.preventDefault(); void checkIn(code); }}>
               {canScan && (
-                <button type="button" className={bigSecondary} onClick={() => setScanning(true)}>
+                <button type="button" className={bigSecondary} onClick={() => void scan()}>
                   <Icon name="qr" /> {t('scan_qr')}
                 </button>
               )}

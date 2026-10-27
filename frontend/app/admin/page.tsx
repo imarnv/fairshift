@@ -1,15 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Payroll } from '@/components/admin/Payroll';
 import { FeedbackSection, OverviewSection, SafetySection, WorkersSection } from '@/components/admin/sections';
 import { ICONS, Icon, IconName, Wordmark } from '@/components/ui';
 import { Me, Overview, api, session } from '@/lib/api';
 import { useLive } from '@/lib/useLive';
 import { useTab } from '@/lib/useTab';
 
-type Section = 'overview' | 'workers' | 'safety' | 'feedback';
+type Section = 'overview' | 'workers' | 'payroll' | 'safety' | 'feedback';
 const NAV: [Section, string, IconName][] = [
-  ['overview', 'Overview', 'home'], ['workers', 'Workers', 'users'], ['safety', 'Safety', 'shield'], ['feedback', 'Feedback', 'lock'],
+  ['overview', 'Overview', 'home'], ['workers', 'Workers', 'users'], ['payroll', 'Payroll', 'rupee'], ['safety', 'Safety', 'shield'], ['feedback', 'Feedback', 'lock'],
 ];
 const SECTIONS = NAV.map(([id]) => id);
 
@@ -87,6 +88,7 @@ export default function Dashboard() {
       <main id="main" className="mx-auto w-full max-w-[100rem] px-4 py-8 sm:px-10 sm:py-10 2xl:px-16">
         {section === 'overview' && <OverviewSection name={me.name.split(' ')[0]} overview={overview} go={go} />}
         {section === 'workers' && <WorkersSection sites={overview?.sites ?? []} />}
+        {section === 'payroll' && <Payroll sites={overview?.sites ?? []} />}
         {section === 'safety' && <SafetySection />}
         {section === 'feedback' && <FeedbackSection />}
       </main>

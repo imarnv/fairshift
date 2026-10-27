@@ -91,6 +91,18 @@ class Credential:
     token: str
 
 
+@dataclass
+class Payment:
+    """One month's wages for one worker, paid through PhonePe."""
+    order_id: str        # our merchantOrderId, sent to PhonePe
+    worker_id: str
+    period: str          # "YYYY-MM", the payslip it pays
+    amount_paise: int
+    status: str = "created"  # "created" | "paid" | "failed"
+    payment_id: str | None = None   # PhonePe's transaction id once paid
+    paid_at: datetime | None = None
+
+
 def hash_pin(pin: str, salt: bytes | None = None) -> str:
     salt = salt or secrets.token_bytes(16)
     digest = hashlib.scrypt(pin.encode(), salt=salt, n=2**14, r=8, p=1)
@@ -116,6 +128,7 @@ class Store:
         self.feedback: dict[str, Feedback] = {}
         self.feedback_voters: dict[str, set[str]] = {}  # site -> voter tags, never linked to an answer
         self.credentials: dict[str, Credential] = {}
+        self.payments: dict[str, Payment] = {}  # by merchant order id
         self._ids = count(1)
 
     def new_id(self, prefix: str) -> str:

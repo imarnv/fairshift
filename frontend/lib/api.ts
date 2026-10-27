@@ -47,6 +47,12 @@ export type Me = {
 export type Payslip = {
   period: string; days_worked: number; regular_hours: number; overtime_hours: number; hourly_rate: number;
   lines: { key: string; amount: number; detail: string }[]; gross: number; net: number;
+  payment: PaymentView | null;
+};
+export type PaymentView = { status: 'created' | 'paid' | 'failed'; amount: number; payment_id: string | null; paid_at: string | null };
+export type Payroll = {
+  month: string; enabled: boolean; mode: 'sandbox' | 'production';
+  workers: { id: string; name: string; trade: string; site_id: string; net: number; hours: number; payment: PaymentView | null }[];
 };
 export type HazardView = {
   id: string; site: string; site_id: string; category: string; severity: string; description: string;
