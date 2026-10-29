@@ -32,11 +32,9 @@ voice-over was generated with Gemini Live, the same model behind the app's assis
 
 ## Screenshots
 
-**Landing and sign-in**
+**Landing**
 
-| Landing | Sign-in with demo accounts |
-|---|---|
-| ![Landing page with the worker app in Tamil](docs/screenshots/landing.png) | ![Sign-in with phone and PIN, or continue as a demo worker or employer](docs/screenshots/login.png) |
+![Landing page with the worker app in Tamil](docs/screenshots/landing.png)
 
 **Worker app** (phone, five languages, voice via the Talk button)
 
