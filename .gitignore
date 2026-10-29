@@ -20,3 +20,4 @@ test-qr/
 # Xcode per-user and build files
 ios/**/xcuserdata/
 ios/build/
+docs/video/voiceover/

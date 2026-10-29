@@ -136,3 +136,12 @@ def test_responses_carry_security_headers():
     headers = client.get("/health").headers
     assert headers["X-Content-Type-Options"] == "nosniff"
     assert "frame-ancestors 'none'" in headers["Content-Security-Policy"]
+
+
+def test_unexpected_errors_return_a_plain_500(worker, monkeypatch):
+    def broken(_user):
+        raise ValueError("internal detail")
+    monkeypatch.setattr("app.routes.worker.services.fatigue_for", broken)
+    r = TestClient(app, raise_server_exceptions=False).get("/api/me/wellbeing", headers=worker)
+    assert r.status_code == 500
+    assert "internal detail" not in r.text and r.json()["detail"]

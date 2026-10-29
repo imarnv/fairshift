@@ -5,6 +5,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import payments, voice
@@ -12,6 +13,7 @@ from .config import settings
 from .routes import admin, worker
 
 logging.basicConfig(level=logging.INFO)
+log = logging.getLogger("shiftsaathi")
 
 app = FastAPI(title="ShiftSaathi", docs_url=None if settings.production else "/docs", redoc_url=None)
 app.include_router(worker.router)
@@ -46,6 +48,13 @@ async def security_headers(request: Request, call_next):
     else:  # pages: always check for a newer release
         response.headers["Cache-Control"] = "no-cache"
     return response
+
+
+@app.exception_handler(Exception)
+async def unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+    """Any error a route did not expect: log the trace, show the client a plain message, never the details."""
+    log.exception("Unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse({"detail": "Something went wrong on our side. Please try again."}, status_code=500)
 
 
 @app.get("/health")  # not /healthz: Cloud Run reserves paths ending in "z"
