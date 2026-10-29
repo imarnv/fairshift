@@ -1,15 +1,15 @@
-# ShiftSaathi demo film: Claude Design prompt and voice-over script
+# ShiftSaathi demo film: animation prompt and voice-over script
 
 - **Voice-over:** already generated with Gemini Live (`gemini-3.1-flash-live-preview`), the model behind the app's voice
   assistant. Files are in `docs/video/voiceover/` (git-ignored): `voiceover.wav` is the full 3:00 track and
   `timeline.json` gives the exact start and end of every line. To retake one line: `python3 docs/video/make_voiceover.py A1`.
-- **Workflow:** paste the prompt below into Claude Design and **attach all 9 PNGs from `docs/screenshots/`** (it can only use images you attach; the prompt refers to them by file name),
+- **Workflow:** paste the prompt below into your animation tool and **attach all 9 PNGs from `docs/screenshots/`** (it can only use the images you attach; the prompt refers to them by file name),
   export the animation as 1920×1080 MP4, lay `voiceover.wav` under it from 0:00, and add the result to the README
   (see "Adding the video to the README" at the end).
 
 ---
 
-## Prompt to paste into Claude Design
+## Prompt to paste into the animation tool
 
 > Create a **3-minute (186 s) animated explainer film, 1920×1080, 30 fps**, for **ShiftSaathi**, an app that gives
 > India's shift workers (construction, hospitals, colleges, factories) fair pay, safe work and a voice. It is a

@@ -3,63 +3,161 @@
 **Fair pay, safe work, and a voice that counts, for India's shift workers.**
 PromptWars 2026 · FairShift challenge · UN SDG 8, Decent Work and Economic Growth.
 
-**Live demo:** https://shiftsaathi-737262865993.asia-south1.run.app
+## 1. Problem statement
 
-Construction sites, hospitals, colleges and factories still run their workforce on paper registers and
-WhatsApp groups. Workers can't see how their pay was worked out, are afraid to complain, and lose their
-work history when they move on. Employers can't see who is overworked or about to quit until it is too
-late. Wages are paid late, in cash, with no record. ShiftSaathi gives each side one screen built for them: a
-voice-first phone app for workers in five Indian languages, and a dashboard for employers that also **pays each
-worker's take-home through PhonePe**, straight from the payslip.
+<!-- Paste the official problem statement here exactly as it was given. -->
 
-## Contents
-[Demo video](#demo-video) · [Screenshots](#screenshots) · [Features](#features) · [Voice assistant](#voice-assistant-the-app-for-workers-who-cant-read-it) · [Tech stack](#tech-stack) · [Try it](#try-it) ·
-[Run locally](#run-locally) · [Environment variables](#environment-variables) · [Architecture](#architecture) ·
-[Key flows](#key-flows) · [Project structure](#project-structure) · [Error handling and validation](#error-handling-and-input-validation) ·
-[Security](#security-and-privacy) · [Accessibility](#accessibility-and-low-end-phones) · [Tests](#tests) ·
-[Deploy](#deploy-to-google-cloud-run) · [iPhone app](#iphone-app) · [Known limits](#known-limits)
+**FairShift.** Construction sites, hospitals, colleges and factories still run their workforce on paper registers and
+WhatsApp groups. Shift workers can't see how their pay was worked out, are afraid to report unsafe conditions or
+complain about a manager, and lose their work history when they move to a new employer. Employers can't see who is
+overworked or about to quit until it is too late. Build a platform that tracks shifts, explains pay clearly, makes
+safety reporting and honest feedback safe, carries a worker's skills from job to job, warns about fatigue, gives
+employers a clear dashboard, and works for workers in their own languages.
 
-## Demo video
+## 2. Solution
 
+ShiftSaathi is a voice-first phone app for workers and a dashboard for employers. A worker checks in by scanning the
+site's QR code, sees a payslip explained line by line, and can talk to it in Hindi, Tamil, Telugu, Kannada or English
+to ask about pay and hours, report a hazard or give anonymous feedback, all from live data. Employers see who is on
+site, who needs rest and who might quit, watch hazards escalate when deadlines are missed, read feedback only once
+five people have answered, and pay each worker's take-home through PhonePe straight from the payslip.
 
+## 3. Tools used
+
+| Gemini tool | What it does in ShiftSaathi |
+|---|---|
+| **Gemini 3.1 Flash Live** (`gemini-3.1-flash-live-preview`, Gemini API) | The worker's real-time voice assistant: listens and answers in five Indian languages, with live captions and interruption |
+| **Gemini Live function calling** | Five tools that turn speech into actions on live data: payslip, hours and fatigue, report status, filing a hazard, giving feedback |
+| **Gemini 2.5 Flash Live native audio on Vertex AI** (`gemini-live-2.5-flash-native-audio`) | The same assistant with no API key, signed in as the Cloud Run service |
+| **Gemini native-audio voices** (Kore, Charon, Algenib, Iapetus) | The assistant's voice in the app, and the narrator and worker voices in the demo film |
+| **Google AI Studio** | The Gemini API key, kept in Google Secret Manager on Cloud Run |
+
+## 4. How to run
+
+**Prerequisites:** Python 3.11 or newer, Node.js 22 and npm, Git. Nothing else: no database and no API keys
+are needed to run the app. The voice assistant and payroll payments need their keys (see
+[Environment variables](#environment-variables)) and say so on screen when they are missing.
+
+```bash
+git clone <this-repo-url> shiftsaathi && cd shiftsaathi
+cp .env.example .env                 # every value may stay empty for a local run
+
+# 1. Build the web app into static files
+cd frontend && npm ci && npm run build && cd ..
+ln -sfn ../frontend/out backend/static   # the API serves the built pages
+
+# 2. Install and start the API
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+python -m uvicorn app.main:app --port 8080 --env-file ../.env
+```
+
+Open http://localhost:8080. API docs are at http://localhost:8080/docs outside production.
+On the first start the app generates development keys into `backend/.dev-secrets.json` (git-ignored), so
+sign-ins and signed passports survive a restart.
+
+**Run the checks** (the same as CI):
+
+```bash
+cd backend && python -m pytest -q
+cd frontend && npm run lint && npm run typecheck && npm run build
+```
+
+**Hot reload for the web app (optional):** set `ALLOWED_ORIGINS=http://localhost:3000` in `.env`, start the API
+as above, then in `frontend/` run `NEXT_PUBLIC_API_BASE=http://localhost:8080 npm run dev`.
+
+On Windows, use `python -m venv .venv` and `.venv\Scripts\activate`, and copy `frontend/out` to `backend/static`
+instead of linking it.
+
+## 5. Demo link
+
+**Live app:** https://shiftsaathi-737262865993.asia-south1.run.app
+
+**Demo video (3 min):**
 
 https://github.com/user-attachments/assets/67f09171-b904-4486-9784-277f4ca6be00
 
+The voice-over was generated with Gemini 3.1 Flash Live, the same model behind the app's assistant
+([script and generator](docs/video/animation-prompt.md)).
 
+Choose **Try the demo**, then **Continue as a worker** (Murugan, a mason) or **Continue as an employer**
+(Anita, HR & Safety).
 
-A 3-minute walkthrough: the problem, check-in and payslips, the voice assistant in Tamil and Hindi, safety
-escalation, anonymous feedback, the Skill Passport, the employer dashboard and payroll through PhonePe. The
-voice-over was generated with Gemini Live, the same model behind the app's assistant
-([script and generator](docs/video/claude-design-prompt.md)).
-
-## Screenshots
-
-**Landing**
-
-![Landing page with the worker app in Tamil](docs/screenshots/landing.png)
-
-**Worker app** (phone, five languages, voice via the Talk button)
-
-| Home: check-in and fatigue warning | Payslip explained line by line |
+| Demo data | Value |
 |---|---|
-| ![Worker home: site-code check-in, hours today and this week, rest-needed warning](docs/screenshots/worker-home.png) | ![Payslip: take-home, basic pay, overtime at double rate, PF and ESI, read aloud](docs/screenshots/payslip.png) |
+| Worker phones | `9000000001` to `9000000023` |
+| PIN (every demo account) | `1234` |
+| Site codes for check-in | `SKY-7Q2`, `CGH-4K9`, `RVC-2M5`, `SLT-8F3` |
 
-**Employer dashboard**
+## 6. Key prompts
 
-| Overview | Anonymous feedback |
-|---|---|
-| ![Overview: sites ranked by Fair Workplace Index, hours, rest and quit-risk flags, open hazards](docs/screenshots/admin-dashboard.png) | ![Feedback by site, with a site under 5 responses withheld to protect anonymity](docs/screenshots/admin-feedback.png) |
+The prompts that shaped ShiftSaathi, in the order the project grew.
 
-**Payroll through PhonePe**
+**1. The idea and the two sides**
+> I want to build something for daily-wage and shift workers in India: masons on building sites, nurses on night
+> shifts, college staff, factory workers. Right now everything is on paper registers and WhatsApp. Give me one app
+> with two faces: a simple phone app for the worker and a dashboard for the employer. Seed it with one real-looking
+> site per sector (a construction site in Chennai, a hospital, a college in Bengaluru, a textile factory in Tiruppur)
+> so the demo feels alive from the first click.
 
-| Pay wages from the payslip | PhonePe checkout for the exact take-home |
-|---|---|
-| ![Payroll: take-home per worker for the month, with a Pay button each](docs/screenshots/payroll.png) | ![PhonePe Standard Checkout page showing the same amount, Rs 42,910.58](docs/screenshots/phonepe-checkout.png) |
+**2. Pay that a worker can actually understand**
+> Work out the payslip from the shifts, following Indian labour law: overtime after 9 hours a day or 48 hours a
+> week, paid at double rate, then PF at 12% of basic and ESI only below the wage ceiling. Every line on the payslip
+> should say how it was calculated, like "130.8 h × ₹95 × 2", and there should be a button that reads it aloud.
+> Keep each rule a small pure function with its own tests.
 
-The amount on PhonePe's page (₹42,910.58) is the same take-home shown on Murugan's payslip and in Payroll: the server
-sets it from the payslip, never the browser.
+**3. Fatigue before it becomes an accident**
+> Warn workers and managers when someone has worked too much: more than 48 or 60 hours in a week, shifts over
+> 12 hours, less than 11 hours' rest between shifts, or too many days without a day off. Always show the reasons,
+> not just a red badge. Use the same signals to flag who is likely to quit.
 
-![Footer of the landing page](docs/screenshots/landing-footer.png)
+**4. Safety reports that can't be ignored**
+> When a worker reports a hazard, give it a deadline based on how dangerous it is: 4 hours if it's critical, a day
+> if high, three days if medium, a week if low. If the supervisor misses it, move it to the site manager; if it's
+> still open at twice the deadline, send it to HR and Safety. Let the worker stay anonymous but still follow their
+> own report.
+
+**5. Feedback without fear**
+> Workers won't be honest if they think the manager can find out who said what. Store feedback with no worker id at
+> all, encrypt the comments, and don't show anything for a site until at least five different people have answered.
+> One worker sending five replies must not be enough to unlock it. Prove it with tests.
+
+**6. A record that travels with the worker**
+> When a worker leaves, their experience disappears. Let an employer certify a skill, sign it so it can't be
+> faked, and give the worker a QR code. Any new employer should be able to verify it on a public page without an
+> account, and changing a single character should break the signature.
+
+**7. Just talk to it**
+> Many workers can't read a screen comfortably. Add a Talk button that opens a live voice conversation with Gemini
+> in whatever language the app is set to: Hindi, Tamil, Telugu, Kannada or English. It should greet the worker by
+> name. When they ask about pay or hours, it must call a tool and read the real numbers, never guess. It should be
+> able to file a hazard or feedback just from what they say: work out the category and how dangerous it is itself,
+> ask only for what's missing, read it back once, and show a confirmation on screen when it's done.
+
+**8. The employer's view**
+> Build the dashboard for HR: who is on site right now, hours worked per day across all sites, who needs rest, who
+> might quit and why, the hazard queue with what's overdue, and a Fair Workplace Index that ranks every site on
+> fixing hazards on time, giving rest and how workers rate it.
+
+**9. Paying wages**
+> Add payroll. The employer picks a month and presses Pay next to a worker, and it goes through PhonePe. The amount
+> must come from the payslip on the server, never from the browser. Only mark it paid once PhonePe confirms it, check
+> the amount matches, accept the webhook only with the right credentials, and never let a month be paid twice. Show
+> the payment date on the worker's payslip.
+
+**10. Made for cheap phones and every reader**
+> Make the worker app light enough for a ₹6,000 phone, translate every screen into all five languages, use pictures
+> where words would be hard, keep touch targets big, and pass WCAG AA contrast. Add a test that fails if any
+> language is missing a string or any colour fails contrast.
+
+**11. Ready for production**
+> Harden it before we ship: no secrets in the code, keys from Secret Manager, refuse to start in production without
+> them. Hash PINs and lock a number after five wrong tries, check roles on every route, bound every input, and add
+> strict security headers. Put it all in one container on Cloud Run, with CI running the tests, lint, type check
+> and build on every push, and a README a judge can follow from a fresh clone.
+
+---
 
 ## Features
 
@@ -151,55 +249,6 @@ Check-in and check-out stay on the QR scan, so a shift can't be started without 
 | Hosting | One Docker container on Google Cloud Run, secrets in Secret Manager |
 | Quality | pytest (76 tests), ESLint, `tsc --noEmit`, GitHub Actions CI |
 
-## Try it
-
-Open the [live demo](https://shiftsaathi-737262865993.asia-south1.run.app), choose **Try the demo**, then
-**Continue as a worker** (Murugan, a mason) or **Continue as an employer** (Anita, HR & Safety).
-
-| Demo data | Value |
-|---|---|
-| Worker phones | `9000000001` to `9000000023` |
-| PIN (every demo account) | `1234` |
-| Site codes for check-in | `SKY-7Q2`, `CGH-4K9`, `RVC-2M5`, `SLT-8F3` |
-
-## Run locally
-
-**Prerequisites:** Python 3.11 or newer, Node.js 22 and npm, Git. Nothing else: no database and no API keys
-are needed to run the app. The voice assistant and payroll payments need their keys (see below) and say so on
-screen when they are missing.
-
-```bash
-git clone <this-repo-url> shiftsaathi && cd shiftsaathi
-cp .env.example .env                 # every value may stay empty for a local run
-
-# 1. Build the web app into static files
-cd frontend && npm ci && npm run build && cd ..
-ln -sfn ../frontend/out backend/static   # the API serves the built pages
-
-# 2. Install and start the API
-cd backend
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements-dev.txt
-python -m uvicorn app.main:app --port 8080 --env-file ../.env
-```
-
-Open http://localhost:8080. API docs are at http://localhost:8080/docs outside production.
-On the first start the app generates development keys into `backend/.dev-secrets.json` (git-ignored), so
-sign-ins and signed passports survive a restart.
-
-**Run the checks** (the same as CI):
-
-```bash
-cd backend && python -m pytest -q
-cd frontend && npm run lint && npm run typecheck && npm run build
-```
-
-**Hot reload for the web app (optional):** set `ALLOWED_ORIGINS=http://localhost:3000` in `.env`, start the API
-as above, then in `frontend/` run `NEXT_PUBLIC_API_BASE=http://localhost:8080 npm run dev`.
-
-On Windows, use `python -m venv .venv` and `.venv\Scripts\activate`, and copy `frontend/out` to `backend/static`
-instead of linking it.
-
 ## Environment variables
 
 All variables are listed with comments in [`.env.example`](.env.example). None are needed for a local run.
@@ -272,70 +321,17 @@ The worker scans the site's QR poster; the API checks the code belongs to their 
 location, that they are within the site's radius. The payslip splits hours per ISO week into regular and overtime
 (past 9 h a day or 48 h a week, paid at double rate), then deducts PF and ESI, and every line can be read aloud.
 
-```mermaid
-sequenceDiagram
-    actor W as Worker
-    participant App as Web app
-    participant API as FastAPI
-    participant Rules as payroll.py
-
-    W->>App: Scan site QR
-    App->>API: POST /api/shifts/check-in {code, lat, lng}
-    API->>API: Code belongs to worker's site? Within radius? Not already in?
-    alt check fails
-        API-->>App: 409 / 422 with a plain reason
-    else ok
-        API-->>App: 201 {started}
-        App-->>W: Live shift timer, overtime warning
-    end
-    W->>App: Check out
-    App->>API: POST /api/shifts/check-out
-    W->>App: Open payslip
-    App->>API: GET /api/me/payslip?month=YYYY-MM
-    API->>Rules: Hours per ISO week, overtime past 9 h/day or 48 h/week, PF, ESI
-    Rules-->>API: Lines with reasons
-    API-->>App: Payslip
-    App-->>W: Explained line by line, read aloud
-```
-
 ### A hazard report and its deadline
 
 A report starts with the site supervisor. Its deadline depends on severity (critical 4 h, high 24 h, medium 72 h,
 low 7 days). Missed once, it moves to the site manager; missed by twice the deadline, to HR & Safety. Reports
 filed by voice follow exactly the same path.
 
-```mermaid
-stateDiagram-v2
-    direction LR
-    [*] --> Supervisor: Worker reports, deadline set by severity
-    Supervisor --> SiteManager: Deadline missed
-    SiteManager --> HRSafety: Missed by twice the deadline
-    Supervisor --> Resolved: Fixed in time
-    SiteManager --> Resolved: Fixed
-    HRSafety --> Resolved: Fixed
-    Resolved --> [*]
-    note right of Supervisor
-        critical 4 h · high 24 h
-        medium 72 h · low 7 days
-    end note
-```
-
 ### Anonymous feedback
 
 A rating and comment are stored with the site and ISO week only; the comment is sealed with AES-256-GCM. The
 worker's voter tag goes into a separate per-site set. Until five different people have answered, the dashboard
 shows a lock; after that, comments are decrypted, shuffled and shown without dates.
-
-```mermaid
-flowchart TD
-    A["Worker sends rating + comment"] --> B["Store: site, ISO week, rating<br/>comment sealed with AES-256-GCM<br/>no worker id"]
-    A --> C["Keyed voter tag added to<br/>the site's separate voter set"]
-    D["Employer opens dashboard"] --> E{"5 or more different<br/>voters for this site?"}
-    C -.-> E
-    E -- No --> F["Show a lock, no comments"]
-    E -- Yes --> G["Decrypt, shuffle,<br/>show without dates"]
-    B -.-> G
-```
 
 ### Paying wages through PhonePe
 
@@ -350,66 +346,11 @@ To try it, create a PhonePe business test account, put its sandbox credentials i
 with the username and password from `PHONEPE_WEBHOOK_USER` / `PHONEPE_WEBHOOK_PASSWORD`. Without them, Payroll still
 shows every amount and says payments are not set up.
 
-```mermaid
-sequenceDiagram
-    actor E as Employer
-    participant API as FastAPI (payments.py)
-    participant PP as PhonePe
-
-    E->>API: Pay worker for month
-    API->>API: Amount = payslip take-home. Already paid? Refuse.
-    API->>PP: Create checkout order (server-side secret)
-    PP-->>API: Payment page URL
-    API-->>E: Redirect to PhonePe
-    E->>PP: Pays
-    PP-->>E: Redirect back
-    E->>API: Return link
-    API->>PP: Order status?
-    PP-->>API: COMPLETED, amount
-    API->>API: Amount matches payslip? Mark paid.
-    PP-)API: Webhook (SHA-256 of username:password checked)
-    API-->>E: Paid, payslip shows date and transaction
-```
-
 ### A voice conversation
 
 The app opens `/ws/voice` with the worker's token and the language on screen. The server starts a Gemini Live session
 in that language with the worker's context and five tools. Questions become tool calls into `services.py`, so every
 number is read live. Actions are saved through the same services as the buttons and confirmed on screen.
-
-```mermaid
-sequenceDiagram
-    actor W as Worker
-    participant App as Web app
-    participant V as voice.py
-    participant G as Gemini Live
-    participant S as services.py
-
-    W->>App: Tap Talk
-    App->>V: Open /ws/voice, first message = token + screen language
-    V->>V: Check token, worker role only
-    V->>G: Start session in that language, worker's context, 5 tools
-    G-->>W: Greets the worker by name (audio + caption)
-
-    Note over W,S: Asking: live data
-    W->>G: "How much overtime this month?" (in Tamil)
-    G->>V: Tool call get_payslip
-    V->>S: payslip_for(worker, this month)
-    S-->>V: Hours, overtime, deductions, take-home, read now
-    V->>G: Tool result
-    G-->>W: Spoken answer in Tamil
-
-    Note over W,S: Acting: raise a concern
-    W->>G: "The scaffolding is shaking, keep my name out"
-    G-->>W: Reads the report back once
-    W->>G: "Yes"
-    G->>V: Tool call report_hazard (fall, high, anonymous)
-    V->>S: report_hazard(..., channel = voice)
-    S-->>V: Filed, assigned to supervisor, deadline
-    V-->>App: Action card: who has it, fix-by time
-    V->>G: Tool result
-    G-->>W: "Sent anonymously, to be fixed within 24 hours"
-```
 
 ## Project structure
 
@@ -433,8 +374,8 @@ sequenceDiagram
 │   ├── components/            Shared UI kit and the two apps' sections
 │   └── lib/                   API client, translations, voice, live polling
 ├── ios/                       iPhone app: native shell with a camera QR scanner
-├── docs/screenshots/          Images used in this README
-├── docs/video/                Demo film: Claude Design prompt, voice-over script and generator
+├── docs/screenshots/          App screenshots
+├── docs/video/                Demo film: animation prompt, voice-over script and generator
 ├── Dockerfile                 One container: builds the web app, runs the API
 ├── .env.example               Every environment variable, without values
 └── .github/workflows/ci.yml   Tests, lint, type check and build on every push
