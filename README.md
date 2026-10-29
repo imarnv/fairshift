@@ -21,9 +21,11 @@ worker's take-home through PhonePe**, straight from the payslip.
 
 ## Demo video
 
-[![Watch the ShiftSaathi demo (3 min)](docs/video/poster.jpg)](docs/video/ShiftSaathi-demo.mp4)
 
-**▶ [Watch the 3-minute demo](docs/video/ShiftSaathi-demo.mp4)** (opens in GitHub's video player)
+
+https://github.com/user-attachments/assets/67f09171-b904-4486-9784-277f4ca6be00
+
+
 
 A 3-minute walkthrough: the problem, check-in and payslips, the voice assistant in Tamil and Hindi, safety
 escalation, anonymous feedback, the Skill Passport, the employer dashboard and payroll through PhonePe. The
