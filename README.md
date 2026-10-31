@@ -5,22 +5,65 @@ PromptWars 2026 · FairShift challenge · UN SDG 8, Decent Work and Economic Gro
 
 ## 1. Problem statement
 
-<!-- Paste the official problem statement here exactly as it was given. -->
+### FairShift: Decent Work Platform
+**Building fairer, safer, and more transparent workplaces for employee-intensive organisations.**
+**Theme:** UN SDG 8 — Decent Work and Economic Growth
 
-**FairShift.** Construction sites, hospitals, colleges and factories still run their workforce on paper registers and
-WhatsApp groups. Shift workers can't see how their pay was worked out, are afraid to report unsafe conditions or
-complain about a manager, and lose their work history when they move to a new employer. Employers can't see who is
-overworked or about to quit until it is too late. Build a platform that tracks shifts, explains pay clearly, makes
-safety reporting and honest feedback safe, carries a worker's skills from job to job, warns about fatigue, gives
-employers a clear dashboard, and works for workers in their own languages.
+#### The Problem Context: Manual Workforce Management
+Large workforces still rely on paper registers, spreadsheets, and WhatsApp groups across key sectors:
+- **Construction:** Daily shift workers on active sites.
+- **Colleges & Schools:** Campus support and facility staff.
+- **Hospitals:** Round-the-clock care and sanitation teams.
+- **Factories:** High-volume floor and line operators.
+
+#### Worker Pain Points: Why Workers Struggle Today
+- **Opaque Pay Calculations:** Unclear salary breakdowns or uncounted overtime hours.
+- **Fear of Identification:** Hesitation to raise complaints or share honest feedback.
+- **Unreported Safety Risks:** Workplace hazards ignored until actual injuries occur.
+- **Lost Career History:** Unrecorded skills force workers to restart from zero.
+
+#### Systemic Gaps: Employer Blind Spots & User Needs
+**For Employers**
+- **Zero Workforce Visibility:** No clear view of overworked or unhappy staff.
+- **High Attrition Risk:** Unable to spot employees likely to quit early.
+- **Delayed Escalation:** Issues reach management only after becoming severe.
+
+**Accessibility Needs**
+- **Regional Languages:** Workers primarily communicate in native local tongues.
+- **Limited Literacy:** Interfaces must support voice and visual cues.
+- **Basic Smartphones:** Must run smoothly on low-end mobile devices.
+
+#### The Mission: Your Hackathon Challenge
+Make work fairer, safer, and more transparent for everyone.
+Empower workers with clarity and voice while giving employers actionable insights into workforce health.
+
+**Cross-Industry Requirement (2+ Sectors):** Your platform must work across at least two distinct industries
+(e.g., Construction Site + College).
+
+#### Example Features
+**Transparency & Safety Tools**
+1. **Shift Tracking:** QR or location check-in with automatic overtime.
+2. **Clear Payslips:** Simple salary breakdown in worker's native language.
+3. **Safety Reporting:** Voice or text hazard reports with status tracking.
+4. **Honest Feedback:** Anonymous reviews on managers and working conditions.
+
+**Growth, Wellbeing & Insights**
+
+5. **Skill Passport:** Portable digital record of training and experience.
+6. **Fatigue Alerts:** Flags excessive hours or back-to-back shifts.
+7. **Admin Dashboard:** Tracks attendance trends, complaints, and quit risks.
+8. **Voice & Local:** Multilingual voice support for low-end smartphones.
 
 ## 2. Solution
 
-ShiftSaathi is a voice-first phone app for workers and a dashboard for employers. A worker checks in by scanning the
-site's QR code, sees a payslip explained line by line, and can talk to it in Hindi, Tamil, Telugu, Kannada or English
-to ask about pay and hours, report a hazard or give anonymous feedback, all from live data. Employers see who is on
-site, who needs rest and who might quit, watch hazards escalate when deadlines are missed, read feedback only once
-five people have answered, and pay each worker's take-home through PhonePe straight from the payslip.
+ShiftSaathi is a voice-first phone app for workers and a dashboard for employers that brings all eight features in
+the brief together in one place. A worker checks in by scanning the site's QR code, sees a payslip explained line by
+line, gets fatigue alerts before overwork turns into an accident, carries their skills to the next job in a signed
+Skill Passport, and can talk to the app in Hindi, Tamil, Telugu, Kannada or English to ask about pay and hours, report
+a hazard or give anonymous feedback, all from live data. Employers see who is on site, who needs rest and who might
+quit, and watch hazards escalate when deadlines are missed. **A built-in payment gateway (PhonePe) lets the employer
+settle each worker's wages from the platform itself**: the amount comes straight from the payslip, and the worker
+sees the date they were paid.
 
 ## 3. Tools used
 
